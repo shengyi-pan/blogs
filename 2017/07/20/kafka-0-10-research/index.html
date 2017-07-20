@@ -6,14 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://shengyi-pan.github.io/blogs">
-  <title>DT那些事儿</title>
+  <title>Kafka实践、升级和新版本（0.10）特性预研 | DT那些事儿</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="DT那些事儿">
-<meta property="og:url" content="https://shengyi-pan.github.io/blogs/index.html">
+  <meta name="description" content="一、消息总线MQ和Kafka （挡在请求的第一线）先看几个真实的应用场景：   case a：上游系统往下游系统推送消息，而不关心处理结果。 case b：一份新数据生成，需要实时保存到数据库，索引系统，统计系统等。 case c：调用一个耗时很长的接口，需要在任务完成的时候告知调用方。  这个时候消息总线（Message Queue）就可以发挥作用，它的特长是“解耦”：    case a：消息">
+<meta name="keywords" content="kafka">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka实践、升级和新版本（0.10）特性预研">
+<meta property="og:url" content="https://shengyi-pan.github.io/blogs/2017/07/20/kafka-0-10-research/index.html">
 <meta property="og:site_name" content="DT那些事儿">
+<meta property="og:description" content="一、消息总线MQ和Kafka （挡在请求的第一线）先看几个真实的应用场景：   case a：上游系统往下游系统推送消息，而不关心处理结果。 case b：一份新数据生成，需要实时保存到数据库，索引系统，统计系统等。 case c：调用一个耗时很长的接口，需要在任务完成的时候告知调用方。  这个时候消息总线（Message Queue）就可以发挥作用，它的特长是“解耦”：    case a：消息">
+<meta property="og:image" content="https://shengyi-pan.github.io/blogs/2017/07/20/kafka-0-10-research/kafka-1.png">
+<meta property="og:image" content="https://shengyi-pan.github.io/blogs/2017/07/20/kafka-0-10-research/kafka-2.png">
+<meta property="og:image" content="https://shengyi-pan.github.io/blogs/2017/07/20/kafka-0-10-research/kafka-3.png">
+<meta property="og:updated_time" content="2017-07-20T11:36:01.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DT那些事儿">
+<meta name="twitter:title" content="Kafka实践、升级和新版本（0.10）特性预研">
+<meta name="twitter:description" content="一、消息总线MQ和Kafka （挡在请求的第一线）先看几个真实的应用场景：   case a：上游系统往下游系统推送消息，而不关心处理结果。 case b：一份新数据生成，需要实时保存到数据库，索引系统，统计系统等。 case c：调用一个耗时很长的接口，需要在任务完成的时候告知调用方。  这个时候消息总线（Message Queue）就可以发挥作用，它的特长是“解耦”：    case a：消息">
+<meta name="twitter:image" content="https://shengyi-pan.github.io/blogs/2017/07/20/kafka-0-10-research/kafka-1.png">
   
     <link rel="alternative" href="/atom.xml" title="DT那些事儿" type="application/atom+xml">
   
@@ -171,16 +180,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-kafka-0-10-research" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-kafka-0-10-research" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/blogs/2017/07/20/kafka-0-10-research/">Kafka实践、升级和新版本（0.10）特性预研</a>
+    <h1 class="article-title" itemprop="name">
+      Kafka实践、升级和新版本（0.10）特性预研
     </h1>
   
 
@@ -210,12 +217,191 @@
 <li>数据多机备份，落地到磁盘，基于offset数据可以方便的指定消费。</li>
 <li>基于内部协议，获取数据的消费进程天生支持 balance和failover。</li>
 <li>集群的可靠性较高，维护成本还算低。</li>
-<li>几乎主流的实时流计算框架（storm，spark，flink）都支持kafka。
-        
-          <a class="article-more-a" href="/blogs/2017/07/20/kafka-0-10-research/#more">more >></a>
-        
+<li>几乎主流的实时流计算框架（storm，spark，flink）都支持kafka。<a id="more"></a>
+<strong>Kafka的角色分布</strong><br>Kafka的sever 叫broker，broker有两种角色：leader 和 follower。 leader 和 follower 是针对partition（kafka的逻辑结构见下文）来说的，producer和consumer只会和leader交互。当Kafka集群发生动荡，会重新挑选新的leader，producer 和 consumer 会自动兼容leader的变动，但当leader无法选出，会抛出异常。<br><strong>Kafka的逻辑结构</strong><br>broker -&gt; topic -&gt; partition -&gt; message<time, key,="" value=""><br>上面都是1对多的关系，操作数据只需要指定topic，partition的分配系统会帮你完成。<br><strong>Kafka的物理结构</strong><br>broker上会为拥有的（无论是作为leader还是follower）topic-partition创建目录 topic-partition-number,目录下的内容如截图：  </time,></li>
+</ol>
+<img src="/blogs/2017/07/20/kafka-0-10-research/kafka-1.png" alt="kafka-1.png" title="">  
+<p>一个segment由3种名字相同的文件组成，.index文件 ， .log 文件，.timeindex 文件  </p>
+<ul>
+<li>文件的名字（segment name）： 记录base offset，全局的offset，从0开始计数。</li>
+<li>.index file : 记录 <relative offset，="" physical="" position="">，physical position对应的是.log文件物理偏移。  </relative></li>
+</ul>
+<p>采用折半查找，基于消息的offset可以快速定位所在的文件， segment-&gt;index-&gt;log： </p>
+<ol>
+<li>定位segment。</li>
+<li>使用segment对应的index文件获取物理偏移。</li>
+<li>使用segment对应的log文件，获取具体的数据。</li>
+</ol>
+<p>.timeindex    文件是0.10版本新增的，结构如下：  </p>
+<ul>
+<li>.timeindex file: <timestamp, offset="">, 当新的msg 的时间大于当前segment的 largest time， 则往 timeindex file 添加一行数据  （0.10）</timestamp,></li>
+</ul>
+<p>加入这个文件能优化  time based log rolling， time based log retention， search message by timestamp等操作（详见<a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-33+-+Add+a+time+based+log+index" target="_blank" rel="external">KIP-33</a>）。  </p>
+<h2 id="二、Kafka-producer-amp-consumer-（Kafka的两板斧）"><a href="#二、Kafka-producer-amp-consumer-（Kafka的两板斧）" class="headerlink" title="二、Kafka producer&amp;consumer  （Kafka的两板斧）"></a>二、Kafka producer&amp;consumer  （Kafka的两板斧）</h2><h3 id="1-producer"><a href="#1-producer" class="headerlink" title="1.producer"></a>1.producer</h3><p>0.10的producer新增较多的配置参数，和性能密切相关的配置包括：</p>
+<ul>
+<li>batch.size ：size based batching</li>
+<li>linger.ms：time based batching</li>
+<li>compression.type ： kafka支持 GZIP, Snappy 和 LZ4</li>
+<li>max.in.flight.requests.per.connection ：重试的时候会影响消息顺序</li>
+<li>acks：影响持久化</li>
+</ul>
+<p><strong>producer 的数据发送流程：</strong></p>
+<ol>
+<li>每个topic的partition有个队列，从队列中获取就绪发送的batch。  </li>
+<li>发送到相同leader broker的batch聚合在一起。</li>
+<li>构建request发送数据。</li>
+</ol>
+<p><strong>batch 只要满足以下任一条件，即可认为就绪：</strong></p>
+<ol>
+<li>batch.size 条件满足。</li>
+<li>linger.ms 条件满足，收集等待更多的数据可以提升吞吐量。</li>
+<li>其它发送到相同leader broker 的batch已经满足条件。</li>
+<li>flush（） 或者 close（）调用。</li>
+</ol>
+<img src="/blogs/2017/07/20/kafka-0-10-research/kafka-2.png" alt="kafka-2.png" title="">
+<p><strong>batch的size越大</strong>，意味着可以获得更好的<strong>压缩比率=&gt;更大的吞吐量</strong>， 但也会导致 延时较高， 需要根据应用场景做调配。<br>producer acks 参数的影响：  </p>
+<img src="/blogs/2017/07/20/kafka-0-10-research/kafka-3.png" alt="kafka-3.png" title="">
+<p><strong>max.in.flight.requests.per.connection</strong><br>表示将grouped batch 发送到leader broker，还未resp的请求数</p>
+<ul>
+<li>设置为 1: request确定resp后，逐个发送，但会降低吞吐量。</li>
+<li>设置为&gt;1: 提升吞吐量，但在producer失败重试时，会导致message在borker端乱序。</li>
+</ul>
+<p><strong>producer的性能测试</strong><br>在线上的备机(40 core, 96GB)测试了一把producer的性能，环境如下：  </p>
+<ul>
+<li>borker： 一台server上启动3个broker。（只是测试目的，线上环境应该一台server部署一个broker）</li>
+<li>topic： partition个数为6， replicator为3</li>
+</ul>
+<p>使用自带的性能测试脚本kafka-producer-perf-test.sh，设置 </p>
+<ul>
+<li>batch.size = 16KB， </li>
+<li>linger.ms=5，</li>
+<li>max.in.flight.requests.per.connection=1，</li>
+<li>compression.type=gzip </li>
+<li>acks=-1</li>
+</ul>
+<p>总共发送100W消息，每个消息的size为1000byte，结果如下：  </p>
+<pre><code>32941 records/sec (31.42 MB/sec)
+32.53 ms avg latency, 412.00 ms max latency, 
+6 ms 50th, 186 ms 95th, 239 ms 99th, 335 ms 99.9th
+</code></pre><p>最基础的参数调配，producer性能还是挺给力的。基于这批参数，可以对吞吐量、延时、持久化做取舍，增加partition的个数也会提升吞吐量。</p>
+<h3 id="2-consumer"><a href="#2-consumer" class="headerlink" title="2.consumer"></a>2.consumer</h3><p><strong>kafka consumer balance</strong>  </p>
+<p>kafka以group的概念来组合 consumer， 以partition粒度对组内的consumer做rebalancing，封装的消费API可以自动帮你完成balance。实现consumer间的分配调用有两种方式：</p>
+<ul>
+<li>old consumer ： 基于zookeeper实现。消费过的offset信息要更新到zookeeper，可能存在zookeeper的性能瓶颈，0.9以下版本都是这种消费模式。</li>
+<li>new consumer：基于kafka group protocol 支持，使用client-side执行分配策略，依赖 group coordinator（broker） 维护 partition 到 consumer 的分配关系。将groupId映射到 内部topic  __consumer_offsets 的某个partition， 该partition 的leader 作为 group coordinator，同时该partition也存放offset信息。</li>
+</ul>
+<p><strong>消息处理的语意支持</strong>  </p>
+<p>在消息处理上，<strong>kafka 只支持 at least once 和 at most once</strong>，0.10版本目前不支持 exactly once，因为<strong>重复数据可能出现在produce阶段，数据重复处理可能出现在consumer阶段</strong>：  </p>
+<ol>
+<li>在produce阶段，如果borker回传确认消息的时候挂掉，触发produer重发消息，导致重复数据，这时候如果业务是<strong>幂等</strong>的，可以忽略该问题。  </li>
+<li>在consume阶段，依靠可外部系统可以保证数据只处理一次，例如将 partition-offset-result 一起存放到结果中，失败时只要定位上次的offset，可以保证消费阶段的exactly once。</li>
+</ol>
+<p><a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-98+-+Exactly+Once+Delivery+and+Transactional+Messaging" target="_blank" rel="external">KIP-98</a>（Exactly Once Delivery and Transactional Messaging）将会支持exactly once，发布在0.11版本。  </p>
+<p><strong>自动提交offset</strong>  </p>
+<p>配置以下几个参数，可以开始自动提交offset：<br>enable.auto.commit=true<br>auto.commit.interval.ms=5000<br>若enable.auto.commit设置为true，consumer在获取下一批数据的时候，自动提交上批数据的offset （获得的语意是 at least once）  </p>
+<pre><code>while(running) {
+    ConsumerRecords&lt;K, V&gt; records = consumer.poll();
+    process(records);  // application-specific processing
+}
+</code></pre><p>consumer#poll()方法触发两件事：</p>
+<ol>
+<li>如果 enable.auto.commit 设置为true，距离上次提交时间间隔大于auto.commit.interval.ms，则提交上一批数据的offset。</li>
+<li>获取当前一批的数据返回。</li>
+</ol>
+<p>auto.commit.interval.ms控制offset提交的频率， 值越大consumer rebalance 后重复处理的数据可能越多。</p>
+<p><strong>手动提交offset</strong></p>
+<p>有两个方法可以手动提交：<br>consumer.commitSync()  // retry 直到成功 或者 抛出异常<br>consumer.commitAsync()  // 不会retry， 提供callback包含提交的结果  </p>
+<p><strong>consumer的性能测试</strong></p>
+<p>测试机器和producer相同，测试的topic partition个数有6个（消费的线程数最大开到6个），结果如下：  </p>
+<pre><code>start.time, end.time, data.consumed.in.MB, MB.sec, data.consumed.in.nMsg, nMsg.sec
+2017-07-03 14:29:18:164, 2017-07-03 14:29:22:408, 476.8372, 112.3556, 500000, 117813.3836  
+</code></pre><p>每秒能消费的消息数量 11W+ ， 数据量每秒 112MB。<br>消息队列用于构建异步、解耦的架构，会更关注producer的性能能否顶住大量的请求，而在consumer阶段，处理消息的耗时（应用自身的业务逻辑）一般会远远大于consumer自身的耗时。kafka 的producer会等待数据从leader到follower的落地（ack=all），而consumer没有这些耗时，只需要批量的从leader获取数据和更新消费Offset，所以性能会比producer好很多。</p>
+<h2 id="三、Kafka的大版本升级和兼容性-（部署的系统总会要升级的）"><a href="#三、Kafka的大版本升级和兼容性-（部署的系统总会要升级的）" class="headerlink" title="三、Kafka的大版本升级和兼容性 （部署的系统总会要升级的）"></a>三、Kafka的大版本升级和兼容性 （部署的系统总会要升级的）</h2><p><strong>Kafka 版本升级</strong>  </p>
+<p>当前版本：0.8.1.1<br>升级版本：0.10.2<br>需要升级的几大因素：  </p>
+<ol>
+<li>升级后有权限控制ACL<br>可以精确控制每个topic 的produce权限和consume权限。</li>
+<li>消息offset数据的存储改变<br>消费的offset存放位置在低版本中在zookeeper， 存在一定的性能瓶颈和隐患，新版本中已经放到 internal topic， 性能有较大提升。</li>
+<li>kafka stream的引入<br>kafka stream 是轻量级的流处理Client lib， 无任何其它依赖。<br>它使得Apache Kafka可以拥有流处理的能力，通过使用Kafka Stream API进行业务逻辑处理最后写回Kakfa或者其他系统中。  </li>
+</ol>
+<p><strong>升级目标</strong>  </p>
+<ul>
+<li>不影响线上任务，逐台重启。  </li>
+<li>能兼容新旧的producer和consumer，不影响旧代码的运行。  </li>
+<li>旧的数据生成消费机制能顺利的过渡到新模式下，不会对数据造成重复处理或丢失。  </li>
+</ul>
+<p><strong>升级过程记录</strong>  </p>
+<p>两个重要的参数设置：<br><strong>inter.broker.protocal.version</strong><br>更新中：0.8.1.1<br>全部broker更新完成后设置为 0.10.2 ，再逐台重启服务。   </p>
+<p><strong>log.message.format.version</strong><br>更新中：0.8.2<br>所有consumer都更新后（new consumer），再设置为 0.10.2<br>如果设置为 0.8.1.1 ，获取消息的时候会做转换（兼容低版本的message格式），没有zero-copy， CPU负载上升5倍， 建议设置为 0.8.2 or 0.9.0。</p>
+<p>因为broker是向下兼容的，升级过程中必需先成功升级所有的broker。Client（producer 和 consumer）在broker完成升级之后再升级。但在实际情况中，client涉及的程序很多，升级进度必然会远远落后于broker端，所以我们考虑跨版本的情况（broker的版本高于client）。  </p>
+<p><strong>无压缩跨版本的性能测试</strong>  </p>
+<p>broker: 0.10.2  </p>
+<p>producer: 0.8.1.1  </p>
+<pre><code>./bin/kafka-producer-perf-test.sh --messages 500000 --message-size 50000 --topic test-update-perf --threads 8 --broker-list * —show-detailed-stats --csv-reporter-enabled --metrics-dir ./perf-test --reporting-interval 3000
+compression, message.size, batch.size, total.data.sent.in.MB, MB.sec, total.data.sent.in.nMsg, nMsg.sec
+0, 50000, 200, 23841.86, 56.4680, 500000, 1184.2196
+</code></pre><p>每个broker 进程 CPU load &lt; 50%。  </p>
+<p>old consumer：0.8.1.1  </p>
+<pre><code>./bin/kafka-consumer-perf-test.sh --topic test-update-perf --zookeeper 10.100.96.94:2183 --threads 1 --group perf-consumer-t4 --message-size 50000 --messages 10
+</code></pre><p>QPS大概在 3000 nMsg.sec，使用old consumer（0.8.1） 消费 new broker（0.10.2）的数据， broker需要做消息格式的转换， 实际观测 broker 进程的CPU负载不高 &lt; 20%。  </p>
+<p><strong>跨版本压缩数据的测试</strong>  </p>
+<p>broker: 0.10.2  </p>
+<p>old producer： 0.8.1.1  </p>
+<pre><code>start.time, end.time, compression, message.size, batch.size, total.data.sent.in.MB, MB.sec, total.data.sent.in.nMsg, nMsg.sec
+2017-06-09 18:17:09:810, 2017-06-09 18:17:40:309, 2, 50000, 200, 23841.86, 781.7259, 500000, 16393.9801
+</code></pre><p>每个broker 进程 CPU load &lt; 50%  </p>
+<p>old consumer：0.8.1.1  </p>
+<p>QPS大概40000 nMSg.sec，使用 old consumer 消费压缩数据，broker 的CPU 负载没有很高 &lt;20%。<br>因为跨版本调用涉及到消息格式转换，更关注的是带来的CPU负载，性能这块可以参见上文的producer、consumer性能测试相关。</p>
+<h2 id="四、Kafka-Stream-初窥-（实时计算我有我的路）"><a href="#四、Kafka-Stream-初窥-（实时计算我有我的路）" class="headerlink" title="四、Kafka Stream 初窥 （实时计算我有我的路）"></a>四、Kafka Stream 初窥 （实时计算我有我的路）</h2><p><strong>Kafka Stream简介</strong>  </p>
+<p>目前支持实时流计算的有一些框架，如： Spark （micro batch），Storm， Flink，Samza；这些系统都需要部署集群。Kafka stream是实时流计算库，依靠现有的kafka集群，提供分布式的、高容错的、抽象DSL的实时流计算实现：  </p>
+<ul>
+<li>除了Kafka Stream Client lib以外无外部依赖，轻量的嵌入到Java应用中。</li>
+<li>严格区分Event time（数据产生的时间）和Process Time（系统处理的时间），可处理乱序到达的数据。</li>
+<li>支持本地状态故障转移，以实现非常高效的有状态操作，如join和window函数。</li>
+<li>提供必要的流处理原语、hige-level Stream DSL和low-level Processor API。</li>
+</ul>
+<p><strong>Kafka Stream和其它流计算框架的对比</strong>  </p>
+<p>一般的流计算框架用job或者topology来描述任务，它们关注的是：  </p>
+<ul>
+<li>对于提交的任务，高效的将机器资源分配给任务执行。</li>
+<li>任务必须打包自己的业务实现代码（包括依赖包，配置等）提交到集群，集群负责部署到工作节点。</li>
+<li>管理任务的执行情况，保证任务之间的资源隔离性。</li>
+</ul>
+<p><strong>kafka stream更关注于问题本身：</strong>  </p>
+<ul>
+<li>当有新的实例加入执行或者某个执行实例挂掉，就会触发工作实例的balance（原理和kafka consumer的balance一样）。只需要启动一个java进程就可以加入计算任务，kafka stream的实例很适合用容器部署。</li>
+<li>kafka stream的输入和输出都是kafka的topic，同时可维护本地状态（key-value 的表，默认是以 RocksDB实现）支持aggregations和join的计算。状态结果以topic作为Write-ahead logging，所以即使某个实例失败，状态也可以在其它实例恢复。一般实时计算的结果如果要查询，需要将结果数据写入到外部系统（如HBase，Redis），但基于kafka stream的本地状态存储，可以直接向各个<a href="https://www.confluent.io/blog/unifying-stream-processing-and-interactive-queries-in-apache-kafka/" target="_blank" rel="external">实例查询</a>，节省数据的再落地成本。</li>
+</ul>
+<p><strong>什么时候选用Kafka Stream</strong> </p>
+<p>当你的环境中已经存在Kafka作为数据入口，后面当然也可以接 Spark、Storm、Flink等实时流处理框架。如果你的实时流计算只是做一些数据转换清洗、按key聚合计算、需要读取多个topic的数据join，不妨先看下kafka stream的流式计算支持，它能以更轻便的方式实现计算需求。如果你的数据来源涉及DB，HDFS，计算过程中涉及机器学习、NoSQL， 则需要考虑 Spark、Storm、Flink。</p>
+
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢老板<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/blogs/images/wx_pay.png">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -253,54 +439,27 @@
   </div>
 </article>
 
-
-
-
-
   
-    <article id="post-Hello-I-m-here" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/blogs/2017/07/01/Hello-I-m-here/">Hello, I&#39;m here.</a>
-    </h1>
   
-
-        
-        <a href="/blogs/2017/07/01/Hello-I-m-here/" class="archive-article-date">
-  	<time datetime="2017-07-01T13:09:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
+    <a href="/blogs/2017/07/01/Hello-I-m-here/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Hello, I&#39;m here.</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
 
 
 
 
 
   
+  
+  
+
+  
+
   
 
 
@@ -323,8 +482,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: true,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

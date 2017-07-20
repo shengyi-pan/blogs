@@ -6,11 +6,11 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://shengyi-pan.github.io/blogs">
-  <title>DT那些事儿</title>
+  <title>Category: 大数据 | DT那些事儿</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta property="og:type" content="website">
 <meta property="og:title" content="DT那些事儿">
-<meta property="og:url" content="https://shengyi-pan.github.io/blogs/index.html">
+<meta property="og:url" content="https://shengyi-pan.github.io/blogs/categories/大数据/index.html">
 <meta property="og:site_name" content="DT那些事儿">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DT那些事儿">
@@ -173,54 +173,34 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-kafka-0-10-research" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
+  
     
-      <header class="article-header">
-        
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/blogs/archives/2017" class="archive-year">2017</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/blogs/2017/07/20/kafka-0-10-research/" class="archive-article-date">
+  	<time datetime="2017-07-20T07:36:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-20</time>
+</a>
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/blogs/2017/07/20/kafka-0-10-research/">Kafka实践、升级和新版本（0.10）特性预研</a>
+      <a class="archive-article-title" href="/blogs/2017/07/20/kafka-0-10-research/">Kafka实践、升级和新版本（0.10）特性预研</a>
     </h1>
   
 
-        
-        <a href="/blogs/2017/07/20/kafka-0-10-research/" class="archive-article-date">
-  	<time datetime="2017-07-20T07:36:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="一、消息总线MQ和Kafka-（挡在请求的第一线）"><a href="#一、消息总线MQ和Kafka-（挡在请求的第一线）" class="headerlink" title="一、消息总线MQ和Kafka （挡在请求的第一线）"></a>一、消息总线MQ和Kafka （挡在请求的第一线）</h2><p>先看几个真实的应用场景： </p>
-<ul>
-<li>case a：上游系统往下游系统推送消息，而不关心处理结果。</li>
-<li>case b：一份新数据生成，需要实时保存到数据库，索引系统，统计系统等。</li>
-<li>case c：调用一个耗时很长的接口，需要在任务完成的时候告知调用方。</li>
-</ul>
-<p>这个时候消息总线（Message Queue）就可以发挥作用，它的特长是“解耦”：  </p>
-<ul>
-<li>case a：消息先推送到MQ，下游从MQ拿消息；</li>
-<li>case b：新数据推送到MQ， 数据库、索引系统、统计系统可以各自开一个更新进程（独立的进程可以避免某个系统更新成功，某个系统更新失败的问题），从MQ拿数据更新。</li>
-<li>case c：耗时很长的被调接口采用异步机制，收到请求后立即返回给调用方，然后提交具体任务。等真正完成后发消息给MQ， 调用方监控MQ获取完成通知。</li>
-</ul>
-<p>MQ的性能一般比较强悍，还可用作“抵御请求流量冲击”，在高峰期的时候，请求都接受发送到MQ，后面根据实际处理能力，从MQ拿数据处理。因此只要满足可“解耦”的大前提，MQ就可以作为数据／请求的总入口，挡在请求的第一线，各个相关系统从MQ获取数据。<br><a href="http://kafka.apache.org/intro.html" target="_blank" rel="external">Kafka</a> 作为MQ中的佼佼者，有几个特性让人印象深刻：  </p>
-<ol>
-<li>数据多机备份，落地到磁盘，基于offset数据可以方便的指定消费。</li>
-<li>基于内部协议，获取数据的消费进程天生支持 balance和failover。</li>
-<li>集群的可靠性较高，维护成本还算低。</li>
-<li>几乎主流的实时流计算框架（storm，spark，flink）都支持kafka。
-        
-          <a class="article-more-a" href="/blogs/2017/07/20/kafka-0-10-research/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -232,7 +212,7 @@
 		</ul>
 	</div>
 
-      
+          
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -245,63 +225,17 @@
 	</div>
 
 
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-
-
-
-
   
-    <article id="post-Hello-I-m-here" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
+  
+    </div></section>
+  
+
     
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blogs/2017/07/01/Hello-I-m-here/">Hello, I&#39;m here.</a>
-    </h1>
-  
-
-        
-        <a href="/blogs/2017/07/01/Hello-I-m-here/" class="archive-article-date">
-  	<time datetime="2017-07-01T13:09:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-  
 
 
           </div>
@@ -323,11 +257,11 @@
     <script>
 	var yiliaConfig = {
 		mathjax: true,
-		isHome: true,
+		isHome: false,
 		isPost: false,
 		isArchive: false,
 		isTag: false,
-		isCategory: false,
+		isCategory: true,
 		open_in_new: false,
 		root: "/blogs/",
 		innerArchive: true,
