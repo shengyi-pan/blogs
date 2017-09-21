@@ -6,14 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://shengyi-pan.github.io/blogs">
-  <title>Tag: kafka | DT那些事儿</title>
+  <title>逻辑回归损失函数的几种表述 | DT那些事儿</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="DT那些事儿">
-<meta property="og:url" content="https://shengyi-pan.github.io/blogs/tags/kafka/index.html">
+  <meta name="description" content="Logistic 函数的定义：$$σ(z)=\frac{1}{1+e^{-z}}$$ $$z\in \mathbb{R}, σ(z)\in [0, 1]$$ Logistic 函数有几个重要的特性：    σ(-z) = 1 - σ(z)  \(\frac{1}{1+e^{z}}=\frac{e^{-z}}{1+e^{-z}}\) =&amp;gt; \(ln(1+e^{z})=ln(1+e^{-z})+">
+<meta name="keywords" content="算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逻辑回归损失函数的几种表述">
+<meta property="og:url" content="https://shengyi-pan.github.io/blogs/2017/09/21/logistic-loss/index.html">
 <meta property="og:site_name" content="DT那些事儿">
+<meta property="og:description" content="Logistic 函数的定义：$$σ(z)=\frac{1}{1+e^{-z}}$$ $$z\in \mathbb{R}, σ(z)\in [0, 1]$$ Logistic 函数有几个重要的特性：    σ(-z) = 1 - σ(z)  \(\frac{1}{1+e^{z}}=\frac{e^{-z}}{1+e^{-z}}\) =&amp;gt; \(ln(1+e^{z})=ln(1+e^{-z})+">
+<meta property="og:updated_time" content="2017-09-21T09:24:44.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DT那些事儿">
+<meta name="twitter:title" content="逻辑回归损失函数的几种表述">
+<meta name="twitter:description" content="Logistic 函数的定义：$$σ(z)=\frac{1}{1+e^{-z}}$$ $$z\in \mathbb{R}, σ(z)\in [0, 1]$$ Logistic 函数有几个重要的特性：    σ(-z) = 1 - σ(z)  \(\frac{1}{1+e^{z}}=\frac{e^{-z}}{1+e^{-z}}\) =&amp;gt; \(ln(1+e^{z})=ln(1+e^{-z})+">
   
     <link rel="alternative" href="/atom.xml" title="DT那些事儿" type="application/atom+xml">
   
@@ -171,71 +176,144 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-logistic-loss" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/blogs/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/blogs/2017/07/20/kafka-0-10-research/" class="archive-article-date">
-  	<time datetime="2017-07-20T07:36:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-20</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blogs/2017/07/20/kafka-0-10-research/">Kafka实践、升级和新版本（0.10）特性预研</a>
+    <h1 class="article-title" itemprop="name">
+      逻辑回归损失函数的几种表述
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/blogs/2017/09/21/logistic-loss/" class="archive-article-date">
+  	<time datetime="2017-09-21T03:26:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Logistic-函数的定义："><a href="#Logistic-函数的定义：" class="headerlink" title="Logistic 函数的定义："></a><strong>Logistic 函数的定义：</strong></h3><p>$$σ(z)=\frac{1}{1+e^{-z}}$$</p>
+<p>$$z\in \mathbb{R}, σ(z)\in [0, 1]$$</p>
+<p>Logistic 函数有几个重要的特性：  </p>
+<ul>
+<li><p>σ(-z) = 1 - σ(z)</p>
+</li>
+<li><p>\(\frac{1}{1+e^{z}}=\frac{e^{-z}}{1+e^{-z}}\) =&gt; \(ln(1+e^{z})=ln(1+e^{-z})+z\)   </p>
+</li>
+</ul>
+<a id="more"></a>
+<h3 id="Logistic-回归的定义："><a href="#Logistic-回归的定义：" class="headerlink" title="Logistic 回归的定义："></a><strong>Logistic 回归的定义：</strong></h3><p>\(z=f(x)=W^{T}X+b\)</p>
+<p><strong>1. 如果 y = 1 或者 y = 0 来定义样本标签，则有：</strong></p>
+<p>$$\begin{equation}<br>\begin{aligned}<br>\mathbb{P}(y=1|z) &amp; =\sigma(z)=\frac{1}{1+e^{-z}}\<br>\mathbb{P}(y=0|z) &amp; =1-\sigma(z)=\frac{1}{1+e^{z}}\<br>\end{aligned}<br>\end{equation}$$</p>
+<p>紧凑的写法有：<br>$$\mathbb{P}(y|z)  =\sigma(z)^y(1-\sigma(z))^{1-y}$$</p>
+<p>则有似然函数：<br>$$\prod_{i}^{m}\mathbb{P}(y|z)$$<br>目标函数可以是最大化 log likelihood， 也可以最小化  -log likelihood（损失函数）</p>
+<p><strong>损失函数定义为：</strong><br>$$\begin{equation}<br>\begin{aligned}<br>Loss(z)=-\log\big(\prod_i^m\mathbb{P}(y_i|z_i)\big)=-\sum_i^m\log\big(\mathbb{P}(y_i|z_i)\big)=\sum_i^m-y_iz_i+\log(1+e^{z_i})<br>\end{aligned}<br>\end{equation}$$</p>
+<p><strong>2. 如果 y = 1 或者 y = -1 来定义样本标签，则有：</strong></p>
+<p>$$\begin{equation}<br>\mathbb{P}(y|z)=\sigma(yz).<br>\end{equation}$$</p>
+<p>同时有：<br>$$\mathbb{P}(y=0|z)=\mathbb{P}(y=-1|z)=\sigma(-z)$$</p>
+<p><strong>损失函数定义为：</strong><br>$$\begin{equation}<br>\begin{aligned}<br>Loss(z)=-\log\big(\prod_j^m\mathbb{P}(y_j|z_j)\big)=-\sum_j^m\log\big(\mathbb{P}(y_j|z_j)\big)=\sum_j^m\log(1+e^{-yz_j})<br>\end{aligned}<br>\end{equation}$$</p>
+<p>可以看到：</p>
+<p>\(z=f(x)=W^{T}X+b\)</p>
+<p>\(\log(1+e^{-yf(x)})\) 为<strong>标准的Logistic Loss</strong></p>
+<p>可以等价两种损失函数的表述：</p>
+<p>\(\begin{equation}<br>\begin{aligned}<br>-y_iz_i+\log(1+e^{z_i})\equiv \log(1+e^{-yz_j})<br>\end{aligned}<br>\end{equation}\)</p>
+<p>当y=1时两边都适用，当y=0选用左边的，当y=-1选用右边的</p>
+<p><strong>3. 从标准的Logistic Loss 推导到 likelihood：</strong></p>
+<p>当y=1 或者 y=-1时</p>
+<p>\(Loss(z)=\log(1+e^{-yz})=\log\frac{1}{\mathbb{P}(y|z)}\)</p>
+<p>\(argmin Loss(z) = argmin \sum \log\frac{1}{\mathbb{P}(y|z)} \<br>= argmax \sum \log \mathbb{P}(y|z)=argmax \log \prod \mathbb{P}(y|z)=argmax \prod \mathbb{P}(y|z)<br>\)</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢老板<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/blogs/images/wx_pay.png">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kafka</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/blogs/categories/大数据/" class="article-tag-list-link color4">大数据</a>
+        			<a href="/blogs/categories/人工智能/" class="article-tag-list-link color5">人工智能</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/blogs/2017/07/20/kafka-0-10-research/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Kafka实践、升级和新版本（0.10）特性预研</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+  
+  
   
 
-    
+  
+
+  
 
 
           </div>
@@ -258,9 +336,9 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		root: "/blogs/",
