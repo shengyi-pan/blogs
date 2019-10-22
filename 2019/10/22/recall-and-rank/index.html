@@ -6,14 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://shengyi-pan.github.io/blogs">
-  <title>Category: 人工智能 | DT那些事儿</title>
+  <title>DT那些事儿</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
+  <meta name="description" content="严选个性化实践之路背景网易严选是一家品牌电商，连接着供应商和用户，改善供应链的同时给用户提供高品质、高质量、无大牌溢价的商品。营销侧业务场景是在线电商的重中之重，面临的场景挑战包括：  如何优化流量分配？ 如何增加GMV？ 如何提升用户购物体验？  互联网人口红利消失殆尽，在存量争夺用户时间的战场上，必须高效充分利用每份流量。使用个性化算法是各家必用技术，在电商的营销场景提升效果明显，点击率预估提">
+<meta property="og:type" content="article">
 <meta property="og:title" content="DT那些事儿">
-<meta property="og:url" content="https://shengyi-pan.github.io/blogs/categories/人工智能/index.html">
+<meta property="og:url" content="https://shengyi-pan.github.io/blogs/2019/10/22/recall-and-rank/index.html">
 <meta property="og:site_name" content="DT那些事儿">
+<meta property="og:description" content="严选个性化实践之路背景网易严选是一家品牌电商，连接着供应商和用户，改善供应链的同时给用户提供高品质、高质量、无大牌溢价的商品。营销侧业务场景是在线电商的重中之重，面临的场景挑战包括：  如何优化流量分配？ 如何增加GMV？ 如何提升用户购物体验？  互联网人口红利消失殆尽，在存量争夺用户时间的战场上，必须高效充分利用每份流量。使用个性化算法是各家必用技术，在电商的营销场景提升效果明显，点击率预估提">
+<meta property="og:image" content="https://raw.githubusercontent.com/shengyi-pan/image-bed/master/mac/20191021180951.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/shengyi-pan/image-bed/master/mac/20191021192915.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/shengyi-pan/image-bed/master/mac/20191021181648.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/shengyi-pan/image-bed/master/mac/20191021182120.png">
+<meta property="og:updated_time" content="2019-10-22T07:13:40.739Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DT那些事儿">
+<meta name="twitter:description" content="严选个性化实践之路背景网易严选是一家品牌电商，连接着供应商和用户，改善供应链的同时给用户提供高品质、高质量、无大牌溢价的商品。营销侧业务场景是在线电商的重中之重，面临的场景挑战包括：  如何优化流量分配？ 如何增加GMV？ 如何提升用户购物体验？  互联网人口红利消失殆尽，在存量争夺用户时间的战场上，必须高效充分利用每份流量。使用个性化算法是各家必用技术，在电商的营销场景提升效果明显，点击率预估提">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/shengyi-pan/image-bed/master/mac/20191021180951.png">
   
     <link rel="alternative" href="/atom.xml" title="DT那些事儿" type="application/atom+xml">
   
@@ -171,130 +180,141 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-recall-and-rank" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="严选个性化实践之路"><a href="#严选个性化实践之路" class="headerlink" title="严选个性化实践之路"></a>严选个性化实践之路</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>网易严选是一家品牌电商，连接着供应商和用户，改善供应链的同时给用户提供高品质、高质量、无大牌溢价的商品。营销侧业务场景是在线电商的重中之重，面临的场景挑战包括：</p>
+<ul>
+<li>如何优化流量分配？</li>
+<li>如何增加GMV？</li>
+<li>如何提升用户购物体验？</li>
+</ul>
+<p>互联网人口红利消失殆尽，在存量争夺用户时间的战场上，必须高效充分利用每份流量。使用个性化算法是各家必用技术，在电商的营销场景提升效果明显，点击率预估提升一小步，流水增益一大步。严选目前主要采用深度模型应用在搜索、推荐、广告等场景，具体算法方向有DeepCTR、Embedding、NLP。我们选用TensorFlow作为模型训练和推断的解决方案，拥抱深度学习和TensorFlow带来的好处：</p>
+<ul>
+<li><p>提升模型迭代效率</p>
+<p>  可以从两点理解：</p>
+<p>  1）大部分特征组合工作交给深度模型，让MLE更关注在模型本身，享受学术届新模型落地在工业界的技术红利。</p>
+<p>  2）TensorFlow提供很多预训练好模型和模型基础结构。</p>
+</li>
+<li><p>训练和推断无缝结合。（TFS的出现是当初选择TensorFlow的最大参考因素，目前也在尝试TFX中）</p>
+</li>
+<li><p>充足的社区资源。（踩坑也可以爬得出来）</p>
+</li>
+</ul>
+<p>在转向深度学习的这两年，严选个性化场景的用户体验、指标数据都有较大提升（产品形式、系统能力、算法效果都在持续优化中）。个性化场景最重要的两个阶段是<strong>召回和排序</strong>，接下来会从这两方面切入分享严选实践经验和思路总结。</p>
+<h2 id="能力统一召回体系"><a href="#能力统一召回体系" class="headerlink" title="能力统一召回体系"></a>能力统一召回体系</h2><p><strong>这里的召回更准确定义是 召回+粗排。</strong> 召回的目的是快速缩小范围，减轻精排的压力。严选系统当下的挑战不在数据规模和系统压力，我们设计系统最看重的是复用性、维护性和扩展性。因此考虑对召回能力做大统一，涉及搜索、推荐、广告、客服多个业务场景。</p>
+<h3 id="召回抽象"><a href="#召回抽象" class="headerlink" title="召回抽象"></a>召回抽象</h3><p>对召回来说，输入输出都是信息，只是信息的类别可能不同，同时必须定义信息间关系度量： $ score = f(InputData,OutputData) $。召回阶段对时延比较敏感，不能选用太过复杂关系度量算法。对于多个场景，信息可以抽象为：</p>
+<ul>
+<li>搜索（输入查询词，输出商品列表、专题内容列表）</li>
+<li>推荐（输入用户，输出商品列表）</li>
+<li>广告（输入用户，输出素材列表）</li>
+<li>客服（输入问题，输出答案列表、相似问题列表）</li>
+</ul>
+<p><strong>信息载体包括文本和向量，两端信息载体相同的情况下才能计算关系度量值。</strong> 显而易见 查询词、商品、问题/答案、专题内容 天然包含文本信息，而使用向量必须依靠模型做目标的向量化表征。</p>
+<p>类似Airbnb<sup>[1]</sup>Sequence Embedding思路，我们基于TensorFlow实现商品向量化表征，同时引入Batch内paire-wised loss和side info进一步提升模型的性能&amp;效果。基于商品向量可以关联表征用户、查询词、专题。</p>
+<p><img src="https://raw.githubusercontent.com/shengyi-pan/image-bed/master/mac/20191021180951.png" alt="向量关联表征" title="向量表征"></p>
+<p>问题/答案的向量化参考sentence embedding技术，由专门的NLP同学负责。</p>
+<h3 id="召回能力"><a href="#召回能力" class="headerlink" title="召回能力"></a>召回能力</h3><p>如果信息是文本或向量，召回能力需要支持：</p>
+<ul>
+<li><p>文字相关性</p>
+<p>  依靠ES索引，BM25算法度量相关性。</p>
+</li>
+<li><p>语义相似性</p>
+<p>  Pre-train和fine-tuning的BERT模型推断相关性。</p>
+</li>
+<li><p>向量最近邻</p>
+<p>  近似最近邻搜索（Approximate Nearest Neighbor），余弦距离计算相关性。</p>
+</li>
+</ul>
+<p>作为通用召回体系必须保证低延时、高可用，具体做系统架构时我们将三种能力都用索引来支撑。文字相关性本来就是索引提供的能力；向量最近邻基于LSH投影后再建索引，获取索引正排数据（原始向量）计算匹配得分，实现向量的在线查询能力。非GPU环境下BERT模型比较耗时，可将热门查询词和高频问题（二八定律）做离线推断，结果得分T+1同步到索引。</p>
+<p><img src="https://raw.githubusercontent.com/shengyi-pan/image-bed/master/mac/20191021192915.png" alt="能力统一"></p>
+<p>至此三种能力都整合在索引体系下，召回场景可以并行使用。举个例子：</p>
+<ol>
+<li><p>搜索场景：输入查询词同时使用文字相关性，语义相似性（Query和ItemTitle形成setence pair），向量最近邻召回商品（QueryVector到ItemVector）。严选商品总量偏小，扩展召回能力希望用户能看到更多关联商品。</p>
+</li>
+<li><p>推荐场景：输入推荐模块商品池条件和用户向量，使用文字相关性（多路召回的商品过滤条件，是通用的索引条件查询），向量最近邻(UserVector到ItemVector)召回商品。</p>
+</li>
+</ol>
+<h2 id="各显神通精排服务"><a href="#各显神通精排服务" class="headerlink" title="各显神通精排服务"></a>各显神通精排服务</h2><p>精排场景没有考虑对能力做抽象统一，每个模块核心诉求点会不同（有些战略导向的场景可能只考虑曝光点击量）。核心指标上综合考量曝光转化率（CTR*CVR）、UV价值、总体GMV，这些都是算法需要全局优化的目标，同时综合业务方的人工策略，呈现给用户最终的商品浏览效果。小伙伴可以充分发挥聪明才智，自由选择特征和模型结构，以线上ABT数据评估价值。我们的精排模型探索往大的说分为两方面：追求精度效果的复杂深度模型和实时感知用户偏好的在线模型，下文做详细介绍。</p>
+<h3 id="复杂模型"><a href="#复杂模型" class="headerlink" title="复杂模型"></a>复杂模型</h3><p>使用深度模型做DeepCTR预估，主体思路是Embedding&amp;MLP（没有太过创新的地方），对模型做严选场景的适配调整。我们首个深度模型是WDL<sup>[2]</sup>，依靠TensorFlow提供基础的WDL模块可以方便的编码实现。WidePart依靠先验知识构建特征，挑选高覆盖、高价值属性两两交叉构建特征。DeepPart依靠深度网络实现特征组合，对商品Id、类目Id、属性Id Embedding，但不直接对用户Id Embedding，而是基于用户和商品的行为序列表征用户，引入注意力模块[3]计算用户向量。</p>
+<p>后续在定制WDL之上加入CTR、CVR的多任务学习<sup>[4]</sup>，共享Embedding层权重，构建CTCVR LOSS，实现曝光阶段的CVR预估。</p>
+<p><img src="https://raw.githubusercontent.com/shengyi-pan/image-bed/master/mac/20191021181648.png" alt="复杂T+1模型"></p>
+<h3 id="在线模型"><a href="#在线模型" class="headerlink" title="在线模型"></a>在线模型</h3><p>业界已经形成共识数据新鲜度能进一步提升模型效果。为实时感知用户偏好，一般使用实时特征传入深度模型，但存在两个问题 1）实时特征在线计算用于推断，数据清理用于训练；特征调整的维护成本和计算量比较大。2）实时特征线上计算有不可靠性，扰动模型效果。</p>
+<p>我们选择实现成本较低的方案：T+1复杂模型的基础上挑选TopK应用实时重排序，在风险可控的前提下尝试激进实时算法。基于用户和商品交互数据计算用户多类目的实时兴趣向量（用户向量表征参考上文召回说明），在不同的场景按需使用。如在搜索推荐，使用当前上下文信息激活多维度用户实时向量，计算向量距离重排序商品列表达到类似实时模型的效果。系统工程上收益一个是用户和商品交互数据是基础统计，没有额外特征维护成本，另一个使用向量有更好泛化性和数据容错性。严选场景验证效果有明显的提升。</p>
+<p><img src="https://raw.githubusercontent.com/shengyi-pan/image-bed/master/mac/20191021182120.png" alt="实时向量表征"></p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>近几年深度学习领域的技术革新非常快，新模型新思路层出不穷，不由感叹“终身学习”的知行合一颇为不易。严选营销端个性化有丰富的深度学习应用场景，从点击率预估、语义匹配、向量化到素材合成、文案生成、人群画像，我们一直在扩充算法的能力边界。借助TensorFLow高效实现&amp;验证学术界SOTA模型，关注应用微创新和算法适配落地，能大幅提升算法团队工作效率。</p>
+<p>[1] Real-time Personalization using Embeddings for Search Ranking at Airbnb</p>
+<p>[2] Wide &amp; Deep Learning for Recommender Systems</p>
+<p>[3] Deep Interest Network for Click-Through Rate Prediction</p>
+<p>[4] Entire Space Multi-Task Model: An Effective Approach for Estimating Post-Click Conversion Rate</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢老板<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/blogs/images/wx_pay.png">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/blogs/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/blogs/2019/10/21/recall-and-rank/" class="archive-article-date">
-  	<time datetime="2019-10-21T03:26:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-21</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blogs/2019/10/21/recall-and-rank/">严选个性化实践之路</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
+      
 
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/blogs/categories/人工智能/" class="article-tag-list-link color5">人工智能</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
-  
-    
-    
-      
-        </div></section>
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/blogs/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/blogs/2017/09/21/logistic-loss/" class="archive-article-date">
-  	<time datetime="2017-09-21T03:26:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-21</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blogs/2017/09/21/logistic-loss/">逻辑回归损失函数的几种表述</a>
-    </h1>
-  
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/blogs/categories/人工智能/" class="article-tag-list-link color5">人工智能</a>
-        		</li>
-      		
-		</ul>
-	</div>
+  
+<nav id="article-nav">
+  
+  
+    <a href="/blogs/2017/09/21/logistic-loss/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">逻辑回归损失函数的几种表述</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+
+
+
   
   
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -317,10 +337,10 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
-		isCategory: true,
+		isCategory: false,
 		open_in_new: false,
 		root: "/blogs/",
 		innerArchive: true,
@@ -407,11 +427,11 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
+                <a href="javascript:void(0)" class="js-tag color1">kafka</a>
               </li>
             
             <div class="clearfix"></div>
